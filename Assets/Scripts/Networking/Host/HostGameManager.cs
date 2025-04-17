@@ -12,6 +12,7 @@ using Unity.Services.Lobbies.Models;
 using System.Collections;
 using System.Text;
 using Unity.Services.Authentication;
+using Unity.Cinemachine;
 
 
 public class HostGameManager : IDisposable
@@ -27,7 +28,16 @@ public class HostGameManager : IDisposable
 
     private const string GameSceneName = "Gameplay";
 
-    
+    private bool isTeamMatchMode = false;
+
+
+
+    public void SetMatchMode(bool isTeamMatch)
+    {
+        isTeamMatchMode = isTeamMatch;
+    }
+
+
     public async Task StartHostAsync()
     {
         try
@@ -65,7 +75,11 @@ public class HostGameManager : IDisposable
                         visibility: DataObject.VisibilityOptions.Member, 
                         value: joinCode
                         )
-                }
+                }, 
+                { "TeamMatch", new DataObject(
+                    visibility: DataObject.VisibilityOptions.Public, 
+                    value: isTeamMatchMode.ToString().ToLower()    
+                )}
             };
             string playerName = PlayerPrefs.GetString(NameSelector.PlayerNameKey, "Unknown");
             Lobby lobby = await LobbyService.Instance.CreateLobbyAsync($"{playerName}'s Lobby", MaxConnections, lobbyOptions);
@@ -79,26 +93,77 @@ public class HostGameManager : IDisposable
             return;
         }
 
+        
         NetworkServer = new NetworkServer(NetworkManager.Singleton);
 
+        //Filling up user data 
         UserData userData = new UserData
         {
             userName = PlayerPrefs.GetString(NameSelector.PlayerNameKey, "Missing Name"),
-            userAuthId = AuthenticationService.Instance.PlayerId
+            userAuthId = AuthenticationService.Instance.PlayerId,
+            teamId = isTeamMatchMode ? 0 : -1
         };
+        Debug.Log(userData.teamId);
 
         string payload = JsonUtility.ToJson(userData);
         byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);
 
         NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
 
+
         NetworkManager.Singleton.StartHost();
+
+        
+        SetHostSpawnPosition();
 
         NetworkServer.OnClientLeft += HandleClientLeft;
 
-
         NetworkManager.Singleton.SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
     }
+
+    private async void SetHostSpawnPosition()
+    {
+
+        while (SceneManager.GetActiveScene().name != GameSceneName)
+        {
+            await Task.Delay(500); // Wait for the scene to be fully loaded
+        }
+        UserData hostData = HostSingleton.Instance.GameManager.NetworkServer.GetUserDataByClientId(NetworkManager.Singleton.LocalClient.ClientId);
+        Team hostTeam = (Team)hostData.teamId;
+        var hostSpawnPosition = SpawnPoint.GetRandomSpawnPoint(hostTeam);
+        
+        // Vector3 hostSpawnPosition = SpawnPoint.GetRandomSpawnPos();
+        // var hostSpawnPosition = SpawnPoint.GetRandomSpawnPoint();
+   
+        if (hostSpawnPosition.position == Vector3.zero)
+        {
+            Debug.LogWarning("No spawn points available. Using default position.");
+            // hostSpawnPosition = new Vector3(0f, 0f, 0f);
+        }
+
+        if (NetworkManager.Singleton.LocalClient.PlayerObject != null)
+        {
+            //initial position
+            var playerTransform = NetworkManager.Singleton.LocalClient.PlayerObject.transform;
+            playerTransform.position = hostSpawnPosition.position; 
+
+            // Face toward center of the map
+            Vector3 directionToCenter = (Vector3.zero - hostSpawnPosition.position).normalized;
+            playerTransform.rotation = Quaternion.LookRotation(directionToCenter);
+
+            //Face camera...
+            var orbitalFollow = playerTransform.GetComponentInChildren<CinemachineOrbitalFollow>(); // Get the camera
+            if (orbitalFollow != null)
+            {       
+                float rotationY = playerTransform.rotation.eulerAngles.y;
+                // Normalize it to the 0-360 range (it should already be in this range)
+                if (rotationY < 0) rotationY += 360;
+                orbitalFollow.HorizontalAxis.Value = rotationY;
+            }
+        }
+    }
+
+
     //keep alive lobby
     private IEnumerator HeartbeatLobby(float waitTimeSeconds)
     {

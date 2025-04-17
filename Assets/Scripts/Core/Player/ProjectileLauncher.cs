@@ -2,6 +2,7 @@ using System;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class ProjectileLauncher : NetworkBehaviour
 {
@@ -13,6 +14,7 @@ public class ProjectileLauncher : NetworkBehaviour
     [SerializeField] private GameObject clientProjectilePrefab;
     [SerializeField] private GameObject MuzzleFlash;
     [SerializeField] private Collider playerCollider;
+    [SerializeField] private Image shellReload;
 
     [Header("Settings")]
     [SerializeField] private float projectileSpeed;
@@ -25,11 +27,13 @@ public class ProjectileLauncher : NetworkBehaviour
     private float timer;
   
 
-
-
     public override void OnNetworkSpawn()
     {
-        if(!IsOwner){return;}
+        if(!IsOwner)
+        {
+            shellReload.gameObject.SetActive(false);
+            return;
+        }
 
         inputReader.PrimaryFireEvent += HandlePrimaryFire;
     }
@@ -47,7 +51,25 @@ public class ProjectileLauncher : NetworkBehaviour
         if(!IsOwner){return;}
 
         isPointerOverUI = EventSystem.current.IsPointerOverGameObject();
-        if(timer > 0){timer -= Time.deltaTime;}
+        if(timer > 0)
+        {
+            timer -= Time.deltaTime;
+            //shell icon reloader
+            shellReload.fillAmount = 1f -(timer/(1f/fireRate));
+        }
+        else
+        {
+            shellReload.fillAmount = 1f;
+        }
+
+        if (wallet.TotalCoins.Value < costToFire)
+        {
+            shellReload.color = Color.red;
+        }
+        else
+        {
+            shellReload.color = Color.green;
+        }
         
         if(!shouldFire){return;}
 

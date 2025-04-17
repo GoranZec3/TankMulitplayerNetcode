@@ -82,3 +82,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 30
+  cameraShake: {fileID: 0}

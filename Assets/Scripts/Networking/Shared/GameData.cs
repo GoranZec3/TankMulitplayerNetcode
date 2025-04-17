@@ -11,6 +11,13 @@ public enum GameMode
 
 }
 
+public enum Team
+{
+    Deathmatch = -1,
+    TeamA = 0,
+    TeamB = 1
+}
+
 public enum GameQueue
 {
    Solo,
@@ -22,9 +29,11 @@ public class UserData
 {
    public string userName;
    public string userAuthId;
-   public GameInfo userGamePreferences = new GameInfo();
-
+   public int teamId;
+   
 }
+
+
 
 [Serializable]
 public class GameInfo

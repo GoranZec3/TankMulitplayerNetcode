@@ -65,9 +65,14 @@ public class LobbiesList : MonoBehaviour
         isRefreshing = false;
     }
 
-    public void JoinAsync(Lobby lobby)
+    // public void JoinAsync(Lobby lobby)
+    // {
+    //     mainMenu.JoinAsync(lobby);
+    // }
+    
+    public void JoinAsync(Lobby lobby, int teamId)
     {
-        mainMenu.JoinAsync(lobby);
+        mainMenu.JoinAsync(lobby, teamId);
     }
 
 }

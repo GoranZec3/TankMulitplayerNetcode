@@ -20,7 +20,7 @@ public class PlayerMovement : NetworkBehaviour
     private Vector3 previousMovementInput;
     private Vector3 previousPos;
 
-    private const float ParticleStopThreshold = 0.005f;
+    private const float ParticleStopThreshold = 0.001f;
 
     private void Awake()
     {
@@ -63,8 +63,12 @@ public class PlayerMovement : NetworkBehaviour
 
         previousPos = transform.position;
         if(!IsOwner){return;}
+         float moveInput = previousMovementInput.z;
+    
+        float speed = moveInput < 0 ? movementSpeed * 0.5f : movementSpeed; 
         Vector3 movementDirection = bodyTransfrom.forward * previousMovementInput.z;
-        rb.linearVelocity = movementDirection * movementSpeed;
+        // rb.linearVelocity = movementDirection * movementSpeed;
+        rb.linearVelocity = movementDirection.normalized * speed * Mathf.Abs(moveInput);
 
         //TODO set speed for going reverse to be slow
     }

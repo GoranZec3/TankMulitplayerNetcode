@@ -13,9 +13,7 @@ public class DealDamageOnContact : MonoBehaviour
     }
 
     private void OnTriggerEnter(Collider collider)
-    {
-
-        
+    { 
         if(collider.attachedRigidbody == null){return;}
 
         if(collider.attachedRigidbody.TryGetComponent<NetworkObject>(out NetworkObject netObj))
@@ -25,7 +23,7 @@ public class DealDamageOnContact : MonoBehaviour
 
         if(collider.attachedRigidbody.TryGetComponent<Health>(out Health health))
         {
-            health.TakeDamage(damage);
+            health.TakeDamage(damage);      
         }
     }
 }

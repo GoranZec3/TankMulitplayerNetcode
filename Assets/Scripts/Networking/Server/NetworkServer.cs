@@ -35,10 +35,14 @@ public class NetworkServer : IDisposable
         clientIdToAuth[request.ClientNetworkId] = userData.userAuthId;
         authIdToUserData[userData.userAuthId] = userData;
         OnUserJoined?.Invoke(userData);
-        
 
+        Team playerTeam = (Team)userData.teamId;
+        var spawnData = SpawnPoint.GetRandomSpawnPoint(playerTeam);
+
+        // var spawnData = SpawnPoint.GetRandomSpawnPoint();
         response.Approved = true;
-        response.Position = SpawnPoint.GetRandomSpawnPos();
+        // response.Position = SpawnPoint.GetRandomSpawnPos();
+        response.Position = spawnData.position;
         response.Rotation = Quaternion.identity;
         response.CreatePlayerObject = true;
     }
