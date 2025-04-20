@@ -3,22 +3,24 @@ using UnityEngine;
 
 public class PlayerMovement : NetworkBehaviour
 {
-
     [Header("References")]
     [SerializeField] private InputReader inputReader;
     [SerializeField] private Transform bodyTransfrom;
     [SerializeField] private Rigidbody rb;
     [SerializeField] private ParticleSystem dustCloud;
 
-
     [Header("Settings")]
-    [SerializeField] private float movementSpeed  = 4f;
+    [SerializeField] private float acceleration = 15f;
+    [SerializeField] private float friction = 3f;
     [SerializeField] private float turningRate = 30f;
     [SerializeField] private float particleEmissionValue = 130f;
 
     private ParticleSystem.EmissionModule emissionModule;
     private Vector3 previousMovementInput;
     private Vector3 previousPos;
+
+    private Vector3 velocityVector;
+    private Vector3 accVector;
 
     private const float ParticleStopThreshold = 0.001f;
 
@@ -29,29 +31,48 @@ public class PlayerMovement : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if(!IsOwner) {return;}
+        if (!IsOwner) { return; }
 
         inputReader.MoveEvent += HandleMove;
     }
 
     public override void OnNetworkDespawn()
     {
-        if(!IsOwner) {return;}
+        if (!IsOwner) { return; }
         inputReader.MoveEvent -= HandleMove;
     }
- 
+
     private void Update()
     {
-        if(!IsOwner) {return;}
-        //rotate body to set moving direction
+        if (!IsOwner) { return; }
+        // Rotate body to set moving direction
         float yRotation = previousMovementInput.x * turningRate * Time.deltaTime;
-        bodyTransfrom.Rotate(0f, yRotation ,0f);
+        bodyTransfrom.Rotate(0f, yRotation, 0f);
     }
 
     private void FixedUpdate()
     {
-        //if we have move since last frame
-        if((transform.position - previousPos).sqrMagnitude>ParticleStopThreshold)
+        if (!IsOwner) { return; }
+
+        // Calculate desired direction based on input
+        Vector3 desiredDirection = bodyTransfrom.forward * previousMovementInput.z;
+
+        // Apply acceleration
+        accVector = desiredDirection.normalized * acceleration;
+        
+         // If moving in reverse (negative Z-axis input), reduce the speed
+        float reverseSpeedMultiplier = previousMovementInput.z < 0 ? 0.65f : 1f; 
+        velocityVector += accVector * reverseSpeedMultiplier * Time.fixedDeltaTime;
+
+        // Apply friction
+        float frictionFactor = 1 - (friction * Time.fixedDeltaTime);
+        velocityVector *= Mathf.Clamp01(frictionFactor);
+
+        // Apply movement to Rigidbody
+        rb.linearVelocity = velocityVector;
+
+        // Particle logic
+        if ((transform.position - previousPos).sqrMagnitude > ParticleStopThreshold)
         {
             emissionModule.rateOverTime = particleEmissionValue;
         }
@@ -60,23 +81,11 @@ public class PlayerMovement : NetworkBehaviour
             emissionModule.rateOverTime = 0;
         }
 
-
         previousPos = transform.position;
-        if(!IsOwner){return;}
-         float moveInput = previousMovementInput.z;
-    
-        float speed = moveInput < 0 ? movementSpeed * 0.5f : movementSpeed; 
-        Vector3 movementDirection = bodyTransfrom.forward * previousMovementInput.z;
-        // rb.linearVelocity = movementDirection * movementSpeed;
-        rb.linearVelocity = movementDirection.normalized * speed * Mathf.Abs(moveInput);
-
-        //TODO set speed for going reverse to be slow
     }
 
     private void HandleMove(Vector3 movementInput)
     {
         previousMovementInput = movementInput;
     }
-
-
 }

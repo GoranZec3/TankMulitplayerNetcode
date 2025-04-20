@@ -6,6 +6,7 @@ public class Health : NetworkBehaviour
 {
     [field: SerializeField] public int MaxHealt {get; private set;} = 100;
     [SerializeField] CameraShake cameraShake;
+    [SerializeField] AudioSource hitSound;
 
     //var which can only be modified on server
     public NetworkVariable<int> CurrentHelth = new NetworkVariable<int>();
@@ -21,14 +22,16 @@ public class Health : NetworkBehaviour
 
     public void TakeDamage(int damageValue)
     {
+        
         ModifyHealth(-damageValue);
+        PlayHitSoundClientRpc(transform.position);
         if (OwnerClientId != NetworkManager.ServerClientId)
         {
             ShakeCameraClientRpc(OwnerClientId);
         }
         else
         {
-            cameraShake.ShakeCameraOnHit(); // Local (host) player
+            hitSound.Play();    
         }
     }
 
@@ -59,6 +62,12 @@ public class Health : NetworkBehaviour
         if (NetworkManager.Singleton.LocalClientId != clientId) return;
 
         cameraShake.ShakeCameraOnHit();
+    }
+
+    [ClientRpc]
+    private void PlayHitSoundClientRpc(Vector3 hitPosition)
+    {
+        AudioSource.PlayClipAtPoint(hitSound.clip, hitPosition);
     }
 
 }

@@ -9,6 +9,7 @@ public class SpawnPoint : MonoBehaviour
     [SerializeField] private SphereCollider spawnTrigger;
     [SerializeField] private Team spawnTeam = Team.Deathmatch;
 
+
     private bool isOccupied = false;
     private ulong? occupyingClientId = null;
 
@@ -98,9 +99,20 @@ public class SpawnPoint : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmos() 
+    // private void OnDrawGizmos() 
+    // {
+    //     Gizmos.color = Color.cyan;
+    //     Gizmos.DrawWireSphere(transform.position, 1);
+    // }
+
+    private void OnDrawGizmos()
     {
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(transform.position, 1);
+        Gizmos.color = spawnTeam switch
+        {
+            Team.TeamA => Color.blue,
+            Team.TeamB => Color.red,
+            _ => Color.cyan
+        };
+        Gizmos.DrawWireSphere(transform.position, 1f);
     }
 }

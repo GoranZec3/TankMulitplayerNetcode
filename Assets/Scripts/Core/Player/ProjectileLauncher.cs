@@ -15,6 +15,7 @@ public class ProjectileLauncher : NetworkBehaviour
     [SerializeField] private GameObject MuzzleFlash;
     [SerializeField] private Collider playerCollider;
     [SerializeField] private Image shellReload;
+    [SerializeField] private AudioSource gunshotSound;
 
     [Header("Settings")]
     [SerializeField] private float projectileSpeed;
@@ -118,6 +119,7 @@ public class ProjectileLauncher : NetworkBehaviour
             rb.linearVelocity = rb.transform.forward * projectileSpeed;
         }
 
+
         SpawnDummyProjectileClientRpc(spawnPos, direction);
     }
 
@@ -131,6 +133,11 @@ public class ProjectileLauncher : NetworkBehaviour
 
     private void SpawnDummyProjectile(Vector3 spawnPos, Vector3 direction)
     {
+      
+        // AudioSource.PlayClipAtPoint(gunshotSound.clip, spawnPos); 
+        gunshotSound.Play();
+        
+
         if(MuzzleFlash != null){Instantiate(MuzzleFlash, spawnPos, Quaternion.LookRotation(direction));}
 
         GameObject projectileInstance = Instantiate(clientProjectilePrefab, spawnPos, Quaternion.identity);

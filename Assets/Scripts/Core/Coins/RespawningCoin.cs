@@ -9,7 +9,7 @@ public class RespawningCoin : Coin
 
     private void Update()
     {
-        if(previousPosition != transform.position)
+        if (Vector3.Distance(previousPosition, transform.position) > 0.01f)
         {
             Show(true);
         }

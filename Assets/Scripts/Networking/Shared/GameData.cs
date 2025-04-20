@@ -30,7 +30,7 @@ public class UserData
    public string userName;
    public string userAuthId;
    public int teamId;
-   
+   public int tankIndex;   
 }
 
 

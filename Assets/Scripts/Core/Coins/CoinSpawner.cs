@@ -34,7 +34,7 @@ public class CoinSpawner : NetworkBehaviour
 
         coinInstance.SetValue(coinValue);
         coinInstance.GetComponent<NetworkObject>().Spawn();
-
+        //if this unsubscribe -> never trigger HandleCoinCollected to reset it -> it would stay in place
         coinInstance.OnCollected += HandleCoinCollected;
     }
 
@@ -46,20 +46,22 @@ public class CoinSpawner : NetworkBehaviour
 
     private Vector3 GetSpawnPoint()
     {
-        float x = 0;
-        float z = 0;
-
-        while(true)
+        for (int i = 0; i < 500; i++) 
         {
-            x = UnityEngine.Random.Range(xSpawnRange.x, xSpawnRange.z);
-            z = UnityEngine.Random.Range(zSpawnRange.x, zSpawnRange.z);
+            float x = UnityEngine.Random.Range(xSpawnRange.x, xSpawnRange.z);
+            float z = UnityEngine.Random.Range(zSpawnRange.x, zSpawnRange.z);
 
             Vector3 spawnPoint = new Vector3(x, 0, z);
-            int numCollider = Physics.OverlapSphereNonAlloc(spawnPoint, coinRadius, coinBuffer, layerMask);
-            if(numCollider == 0)
+            int numColliders = Physics.OverlapSphereNonAlloc(spawnPoint, coinRadius, coinBuffer, layerMask);
+
+            if (numColliders == 0)
             {
                 return spawnPoint;
             }
         }
+
+        // Fallback if we couldn't find a valid position
+        Debug.LogWarning("CoinSpawner: Failed to find a valid spawn point after 500 attempts. Returning Vector3.zero.");
+        return Vector3.zero;
     }
 }

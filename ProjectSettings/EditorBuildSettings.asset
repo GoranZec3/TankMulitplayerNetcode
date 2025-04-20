@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Scenes/NetBootstrap.unity
     guid: 6fa3ab1f813284442aac388e0c7a839a
   - enabled: 1
+    path: Assets/Scenes/Selector.unity
+    guid: 61750732b0519144198172a253ffe56a
+  - enabled: 1
     path: Assets/Scenes/Menu.unity
     guid: 99e9a8cdd62992947829ab360933232c
   - enabled: 1
