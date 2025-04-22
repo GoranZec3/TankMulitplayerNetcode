@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using NUnit.Framework;
 using Unity.Cinemachine;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
@@ -20,9 +21,8 @@ public class ClientGameManager : IDisposable
 
     private const string GameSceneName = "Gameplay";
 
-    // private int teamId = -1;
 
-    private const string MenuSceneName = "Menu";
+    private const string SelectorSceneName = "Selector";
 
     public async Task<bool> InitAsync()
     {
@@ -38,6 +38,7 @@ public class ClientGameManager : IDisposable
             {
                 userName = PlayerPrefs.GetString(NameSelector.PlayerNameKey, "Missing Name"),
                 userAuthId = AuthenticationService.Instance.PlayerId,
+                tankIndex = PlayerPrefs.GetInt(CharacterSelection.TankIndexKey)
             };
             return true;
         }
@@ -45,13 +46,13 @@ public class ClientGameManager : IDisposable
         return false;
     }
 
-    public void GoToMenu()
+    public void GoToSelector()
     {
         if (NetworkManager.Singleton.IsClient || NetworkManager.Singleton.IsHost)
         {
             NetworkManager.Singleton.Shutdown();
         }
-        SceneManager.LoadScene(MenuSceneName);
+        SceneManager.LoadScene(SelectorSceneName);
     }
     
     public async Task StartClientAsync(string joinCode)
@@ -66,10 +67,12 @@ public class ClientGameManager : IDisposable
             return;
         }
 
-        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-       
-    
+        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();  
         transport.SetRelayServerData(AllocationUtils.ToRelayServerData(allocation, "dtls"));
+
+        //SELECTED TANK PREFAB ADD ON RECONNECTION
+        userData.tankIndex = PlayerPrefs.GetInt(CharacterSelection.TankIndexKey);
+
         ConnectClient();
 
         //initial client rotation 
@@ -80,20 +83,17 @@ public class ClientGameManager : IDisposable
     {
         string payload = JsonUtility.ToJson(userData);
         byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);
-
         NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
 
-        NetworkManager.Singleton.StartClient();
-
-        
+        NetworkManager.Singleton.StartClient();    
     }
 
     public void SetTeamId(int id)
     {
-        // teamId = id;
-
         userData.teamId = id;
     }
+
+
 
     public void Disconnect()
     {
@@ -116,7 +116,7 @@ public class ClientGameManager : IDisposable
 
         while (SceneManager.GetActiveScene().name != GameSceneName)
         {
-            await Task.Delay(300); // Wait for the scene to be fully loaded
+            await Task.Delay(250); // Wait for the scene to be fully loaded
         }
         
         var playerTransform = NetworkManager.Singleton.LocalClient.PlayerObject.transform;
@@ -134,6 +134,5 @@ public class ClientGameManager : IDisposable
         // Align orbital camera with player's rotation
         orbitalFollow.HorizontalAxis.Value = rotationY;      
     }
-
 
 }

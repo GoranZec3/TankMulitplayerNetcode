@@ -101,29 +101,43 @@ public class HostGameManager : IDisposable
         {
             userName = PlayerPrefs.GetString(NameSelector.PlayerNameKey, "Missing Name"),
             userAuthId = AuthenticationService.Instance.PlayerId,
-            teamId = isTeamMatchMode ? 0 : -1
+            teamId = isTeamMatchMode ? 0 : -1,
+            tankIndex = PlayerPrefs.GetInt(CharacterSelection.TankIndexKey)
         };
-        Debug.Log(userData.teamId);
+
+        //TANK SELECTION
+        GameObject selectedPrefab = GetSelectedPlayerPrefab(userData.tankIndex);  
+        NetworkManager.Singleton.NetworkConfig.PlayerPrefab = selectedPrefab;
 
         string payload = JsonUtility.ToJson(userData);
         byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);
-
         NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
-
 
         NetworkManager.Singleton.StartHost();
 
-        
         SetHostSpawnPosition();
-
         NetworkServer.OnClientLeft += HandleClientLeft;
-
         NetworkManager.Singleton.SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
+    } 
+
+    public GameObject GetSelectedPlayerPrefab(int tankIndex)
+    {
+        foreach (var listContainer in NetworkManager.Singleton.NetworkConfig.Prefabs.NetworkPrefabsLists)
+        {
+            if (listContainer.name == "PlayersList")
+            {
+                // tankIndex corresponds to the position in the PlayersList
+                if (tankIndex >= 0 && tankIndex < listContainer.PrefabList.Count)
+                {
+                    return listContainer.PrefabList[tankIndex].Prefab;
+                }
+            }
+        }
+        return null;
     }
 
     private async void SetHostSpawnPosition()
     {
-
         while (SceneManager.GetActiveScene().name != GameSceneName)
         {
             await Task.Delay(500); // Wait for the scene to be fully loaded
@@ -132,8 +146,6 @@ public class HostGameManager : IDisposable
         Team hostTeam = (Team)hostData.teamId;
         var hostSpawnPosition = SpawnPoint.GetRandomSpawnPoint(hostTeam);
         
-        // Vector3 hostSpawnPosition = SpawnPoint.GetRandomSpawnPos();
-        // var hostSpawnPosition = SpawnPoint.GetRandomSpawnPoint();
    
         if (hostSpawnPosition.position == Vector3.zero)
         {
@@ -184,7 +196,6 @@ public class HostGameManager : IDisposable
     //called on button in gameHUD
     public async void Shutdown()
     {
-
         if (string.IsNullOrEmpty(lobbyId)){return;}
         
         
@@ -201,7 +212,6 @@ public class HostGameManager : IDisposable
         lobbyId = string.Empty;
         
         NetworkServer.OnClientLeft -= HandleClientLeft;
-
         NetworkServer?.Dispose();
     }
 

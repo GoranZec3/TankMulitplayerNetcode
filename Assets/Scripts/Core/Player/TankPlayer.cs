@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using Unity.Cinemachine;
 using Unity.Collections;
 using Unity.Netcode;
@@ -14,13 +15,13 @@ public class TankPlayer : NetworkBehaviour
     [SerializeField] private Transform bodyTransfrom;
     [field:SerializeField] public Health Health{get; private set;} //property which is shown in inspctor - using 'field:'
     [field:SerializeField] public CoinWallet Wallet{get; private set;} 
-    
 
     [Header("Settings")]
     [SerializeField] private int ownerPriority = 15;
     [SerializeField] private Color ownerColor;
 
     public NetworkVariable<FixedString32Bytes> PlayerName = new NetworkVariable<FixedString32Bytes>();
+
 
     public static event Action<TankPlayer> OnPlayerSpawned;
     public static event Action<TankPlayer> OnPlayerDespawned;
@@ -49,9 +50,11 @@ public class TankPlayer : NetworkBehaviour
             }
             
             PlayerName.Value = userData.userName;
+      
 
             Debug.Log($"Player {userData.userName} (Client {OwnerClientId}) is in Team {userData.teamId}");
             OnPlayerSpawned?.Invoke(this);
+
         }
 
         if(IsOwner)
@@ -60,8 +63,6 @@ public class TankPlayer : NetworkBehaviour
             cinemachineCamera.Priority = ownerPriority;  
             minimapIconRenderer.color = ownerColor;  
             Cursor.SetCursor(crosshair, new Vector2(crosshair.width/2, crosshair.height/2), CursorMode.Auto); 
-
-            
         }
     }
 

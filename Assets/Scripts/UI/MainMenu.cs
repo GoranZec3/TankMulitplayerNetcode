@@ -2,15 +2,15 @@ using TMPro;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
     
     [SerializeField] private TMP_InputField joinCodeField;
+    public const string TankSelectorScene = "Selector";
 
     private bool isBusy;
-
-
 
     void Start()
     {
@@ -35,7 +35,6 @@ public class MainMenu : MonoBehaviour
         await HostSingleton.Instance.GameManager.StartHostAsync();
         isBusy = false;
     }
-
 
     public async void StartClient()
     {
@@ -66,5 +65,10 @@ public class MainMenu : MonoBehaviour
         }
 
         isBusy = false;
+    }
+
+    public void GoBackToSelector()
+    {
+        SceneManager.LoadScene(TankSelectorScene);
     }
 }

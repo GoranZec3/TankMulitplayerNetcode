@@ -35,12 +35,17 @@ public class NetworkServer : IDisposable
         authIdToUserData[userData.userAuthId] = userData;
         OnUserJoined?.Invoke(userData);
 
+        //SELECTED TANK PREFAB
+        int tankIndex = userData.tankIndex;
+
+        GameObject selectedPrefab = HostSingleton.Instance.GameManager.GetSelectedPlayerPrefab(tankIndex);
+        NetworkManager.Singleton.NetworkConfig.PlayerPrefab = selectedPrefab;
+
         Team playerTeam = (Team)userData.teamId;
         var spawnData = SpawnPoint.GetRandomSpawnPoint(playerTeam);
 
-        // var spawnData = SpawnPoint.GetRandomSpawnPoint();
+
         response.Approved = true;
-        // response.Position = SpawnPoint.GetRandomSpawnPos();
         response.Position = spawnData.position;
         response.Rotation = Quaternion.identity;
         response.CreatePlayerObject = true;
@@ -49,7 +54,6 @@ public class NetworkServer : IDisposable
     private void OnNetworkReady()
     {
         networkManager.OnClientDisconnectCallback += OnClientDisconnect;
-
     }
 
     private void OnClientDisconnect(ulong clientId)
@@ -57,7 +61,6 @@ public class NetworkServer : IDisposable
         if(clientIdToAuth.TryGetValue(clientId, out string authId))
         {
             clientIdToAuth.Remove(clientId);
-            // OnUserLeft?.Invoke(authIdToUserData[authId]);
             authIdToUserData.Remove(authId);
             OnClientLeft?.Invoke(authId);
         }

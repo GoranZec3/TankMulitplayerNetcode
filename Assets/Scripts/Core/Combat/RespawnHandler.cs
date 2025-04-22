@@ -35,18 +35,6 @@ public class RespawnHandler : NetworkBehaviour
         
     }
 
-    // private void HandlePlayerSpawn(TankPlayer player)
-    // {
-    //     //way to send parameter to HandlePlayerDie
-    //     player.Health.OnDie += (health) => HandlePlayerDie(player);
-    // }
-
-
-    // private void HandlePlayerDespawn(TankPlayer player)
-    // {
-    //     player.Health.OnDie -= (health) => HandlePlayerDie(player);    
-    // }
-
     private void HandlePlayerSpawn(TankPlayer player)
     {
         player.Health.OnDie += OnPlayerDied;
@@ -73,23 +61,6 @@ public class RespawnHandler : NetworkBehaviour
         StartCoroutine(RespawnPlayer(player.OwnerClientId, keptCoins));
     }
 
-    // private IEnumerator RespawnPlayer(ulong ownerClientId, int keptCoins)
-    // {
-        
-    //     yield return new WaitForSeconds(0.1f);
-        
-    //     var spawnData = SpawnPoint.GetRandomSpawnPoint();
-    //     TankPlayer playerInstance = Instantiate(playerPrefab, spawnData.position, spawnData.rotation);
- 
-    //     //keep old ID to new instance
-    //     playerInstance.NetworkObject.SpawnAsPlayerObject(ownerClientId);
-
-    //     playerInstance.Wallet.TotalCoins.Value += keptCoins; 
-
-    //     // Set spawn rotation and camera rotation (for all clients)
-    //     SetSpawnRotation(playerInstance);
-
-    // }
 
     private IEnumerator RespawnPlayer(ulong ownerClientId, int keptCoins)
     {
@@ -97,10 +68,11 @@ public class RespawnHandler : NetworkBehaviour
 
         UserData userData = HostSingleton.Instance.GameManager.NetworkServer.GetUserDataByClientId(ownerClientId);
         Team playerTeam = (Team)userData.teamId;  
+         GameObject selectedPrefab = HostSingleton.Instance.GameManager.GetSelectedPlayerPrefab(userData.tankIndex);
 
         var spawnData = SpawnPoint.GetRandomSpawnPoint(playerTeam); 
 
-        TankPlayer playerInstance = Instantiate(playerPrefab, spawnData.position, spawnData.rotation);
+        TankPlayer playerInstance = Instantiate(selectedPrefab, spawnData.position, spawnData.rotation).GetComponent<TankPlayer>();
 
         // Keep old ID to new instance
         playerInstance.NetworkObject.SpawnAsPlayerObject(ownerClientId);

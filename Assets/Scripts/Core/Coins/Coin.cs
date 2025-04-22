@@ -10,6 +10,11 @@ public abstract class Coin : NetworkBehaviour
 
     public abstract int Collect();
 
+    public override void OnNetworkSpawn()
+    {
+        Show(true); 
+    }
+
     public void SetValue(int value)
     {
         coinValue = value;
@@ -17,8 +22,11 @@ public abstract class Coin : NetworkBehaviour
 
     protected void Show(bool show)
     {
+        // GetComponent<Collider>().enabled = show;
+        // gameObject.SetActive(show);
         GetComponent<Collider>().enabled = show;
-        gameObject.SetActive(show);
-        // transform.GetChild(0).gameObject.SetActive(show);
+
+        if (coinMesh != null)
+            coinMesh.SetActive(show);
     }
 }

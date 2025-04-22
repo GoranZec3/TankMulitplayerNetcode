@@ -1,11 +1,16 @@
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class CharacterSelection : MonoBehaviour
+public class CharacterSelection : NetworkBehaviour
 {
+
+
     public GameObject[] characters;
 	public int selectedCharacter = 0;
     private const string MenuSceneName = "Menu";
+    public const string TankIndexKey = "TankIndex";
+
 
 	public void NextCharacter()
 	{
@@ -27,7 +32,8 @@ public class CharacterSelection : MonoBehaviour
 
 	public void GoToMenu()
 	{
-		PlayerPrefs.SetInt("selectedCharacter", selectedCharacter);
+		PlayerPrefs.SetInt(TankIndexKey, selectedCharacter);
+        // PlayerPrefs.Save();
 		SceneManager.LoadScene(MenuSceneName);
 	}
 }

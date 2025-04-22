@@ -37,5 +37,6 @@ public class RespawningCoin : Coin
     public void Reset()
     {
         alreadyCollected = false;
+        Show(true);
     }
 }

@@ -47,8 +47,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   particleSystemToWatch: {fileID: 8871963971740420649}
-  emptyObjectToDestroy: {fileID: 2156305532617796013}
-  anotherObjectToDestroy: {fileID: 6750054362450455731}
 --- !u!1 &6709285545069140072
 GameObject:
   m_ObjectHideFlags: 0
@@ -4981,7 +4979,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6750054362450455731}
   serializedVersion: 8
-  lengthInSec: 0.8
+  lengthInSec: 0.6
   simulationSpeed: 1
   stopAction: 2
   cullingMode: 0
