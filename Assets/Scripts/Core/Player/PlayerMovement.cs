@@ -8,6 +8,7 @@ public class PlayerMovement : NetworkBehaviour
     [SerializeField] private Transform bodyTransfrom;
     [SerializeField] private Rigidbody rb;
     [SerializeField] private ParticleSystem dustCloud;
+    [SerializeField] private Animator animator;
 
     [Header("Settings")]
     [SerializeField] private float acceleration = 15f;
@@ -70,6 +71,15 @@ public class PlayerMovement : NetworkBehaviour
 
         // Apply movement to Rigidbody
         rb.linearVelocity = velocityVector;
+
+        //Animator
+        if(animator != null)
+        {
+            float currentSpeed = rb.linearVelocity.magnitude;
+            animator.speed = currentSpeed > 0.1f ? currentSpeed / 5f : 0f;
+        }
+        
+
 
         // Particle logic
         if ((transform.position - previousPos).sqrMagnitude > ParticleStopThreshold)

@@ -62,6 +62,15 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Leaderboard"",
+                    ""type"": ""Button"",
+                    ""id"": ""869b9f01-2dbd-44c8-9fc9-5530768bab2b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -262,6 +271,17 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""action"": ""OrbitCamera"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dc11d044-9ab7-47d6-a0c8-290d1d6a811a"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Leaderboard"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -291,6 +311,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_Player_PrimaryFire = m_Player.FindAction("Primary Fire", throwIfNotFound: true);
         m_Player_Aim = m_Player.FindAction("Aim", throwIfNotFound: true);
         m_Player_OrbitCamera = m_Player.FindAction("OrbitCamera", throwIfNotFound: true);
+        m_Player_Leaderboard = m_Player.FindAction("Leaderboard", throwIfNotFound: true);
     }
 
     ~@Controls()
@@ -361,6 +382,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_PrimaryFire;
     private readonly InputAction m_Player_Aim;
     private readonly InputAction m_Player_OrbitCamera;
+    private readonly InputAction m_Player_Leaderboard;
     public struct PlayerActions
     {
         private @Controls m_Wrapper;
@@ -369,6 +391,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         public InputAction @PrimaryFire => m_Wrapper.m_Player_PrimaryFire;
         public InputAction @Aim => m_Wrapper.m_Player_Aim;
         public InputAction @OrbitCamera => m_Wrapper.m_Player_OrbitCamera;
+        public InputAction @Leaderboard => m_Wrapper.m_Player_Leaderboard;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -390,6 +413,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @OrbitCamera.started += instance.OnOrbitCamera;
             @OrbitCamera.performed += instance.OnOrbitCamera;
             @OrbitCamera.canceled += instance.OnOrbitCamera;
+            @Leaderboard.started += instance.OnLeaderboard;
+            @Leaderboard.performed += instance.OnLeaderboard;
+            @Leaderboard.canceled += instance.OnLeaderboard;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -406,6 +432,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @OrbitCamera.started -= instance.OnOrbitCamera;
             @OrbitCamera.performed -= instance.OnOrbitCamera;
             @OrbitCamera.canceled -= instance.OnOrbitCamera;
+            @Leaderboard.started -= instance.OnLeaderboard;
+            @Leaderboard.performed -= instance.OnLeaderboard;
+            @Leaderboard.canceled -= instance.OnLeaderboard;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -438,5 +467,6 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         void OnPrimaryFire(InputAction.CallbackContext context);
         void OnAim(InputAction.CallbackContext context);
         void OnOrbitCamera(InputAction.CallbackContext context);
+        void OnLeaderboard(InputAction.CallbackContext context);
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -17,12 +16,7 @@ public class CoinWallet : NetworkBehaviour
     private float coinRadius;
     private Collider[] coinBuffer = new Collider[1];
     
-    
-
-
     public NetworkVariable<int> TotalCoins = new NetworkVariable<int>();
-
-
 
     public override void OnNetworkSpawn()
     {

@@ -15,6 +15,7 @@ public class TankPlayer : NetworkBehaviour
     [SerializeField] private Transform bodyTransfrom;
     [field:SerializeField] public Health Health{get; private set;} //property which is shown in inspctor - using 'field:'
     [field:SerializeField] public CoinWallet Wallet{get; private set;} 
+    [field:SerializeField] public KillTracker KillTracker{ get; private set; }
 
     [Header("Settings")]
     [SerializeField] private int ownerPriority = 15;
@@ -43,6 +44,12 @@ public class TankPlayer : NetworkBehaviour
     {
         if(IsServer)
         {
+            // if (!TryGetComponent<KillTracker>(out var tracker))
+            // {
+            //     tracker = gameObject.AddComponent<KillTracker>();
+            // }
+            // KillTracker = tracker;
+            
             UserData userData = null;
             if(IsHost)
             {
@@ -52,7 +59,7 @@ public class TankPlayer : NetworkBehaviour
             PlayerName.Value = userData.userName;
       
 
-            Debug.Log($"Player {userData.userName} (Client {OwnerClientId}) is in Team {userData.teamId}");
+            // Debug.Log($"Player {userData.userName} (Client {OwnerClientId}) is in Team {userData.teamId}");
             OnPlayerSpawned?.Invoke(this);
 
         }

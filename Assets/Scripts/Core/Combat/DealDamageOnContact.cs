@@ -19,11 +19,16 @@ public class DealDamageOnContact : MonoBehaviour
         if(collider.attachedRigidbody.TryGetComponent<NetworkObject>(out NetworkObject netObj))
         {
             if(ownerClientId == netObj.OwnerClientId){return;}
+
         }
+
 
         if(collider.attachedRigidbody.TryGetComponent<Health>(out Health health))
         {
-            health.TakeDamage(damage);      
+            health.RegisterDamageDealer(ownerClientId);
+            health.TakeDamage(damage);    
         }
     }
+
+
 }

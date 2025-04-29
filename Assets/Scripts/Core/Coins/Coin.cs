@@ -26,7 +26,7 @@ public abstract class Coin : NetworkBehaviour
         // gameObject.SetActive(show);
         GetComponent<Collider>().enabled = show;
 
-        if (coinMesh != null)
-            coinMesh.SetActive(show);
+        if (coinMesh != null){coinMesh.SetActive(show);}
+            
     }
 }

@@ -24,7 +24,7 @@ public class HostGameManager : IDisposable
 
     public NetworkServer NetworkServer{get; private set;}
 
-    private const int MaxConnections = 20;
+    private const int MaxConnections = 10;
 
     private const string GameSceneName = "Gameplay";
 

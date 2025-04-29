@@ -11,6 +11,7 @@ public class InputReader : ScriptableObject, IPlayerActions
     public event Action<bool> PrimaryFireEvent;
     public event Action<Vector3> MoveEvent;
     public event Action<bool> OrbitCameraEvent;
+    public event Action<bool> LeaderboardShow;
 
     public Vector2 AimPosition{get; private set;} //can be get from anywhere but set only here
 
@@ -66,6 +67,19 @@ public class InputReader : ScriptableObject, IPlayerActions
         else if(context.canceled)
         {
             OrbitCameraEvent?.Invoke(false);
+        }
+    }
+
+    public void OnLeaderboard(InputAction.CallbackContext context)
+    {
+        if(context.performed)
+        {
+            LeaderboardShow?.Invoke(true);
+            Debug.Log("Leaderboard on");
+        }
+        else if(context.canceled)
+        {
+            LeaderboardShow?.Invoke(false);
         }
     }
 }

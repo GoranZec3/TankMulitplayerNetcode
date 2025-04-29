@@ -5,6 +5,7 @@ using UnityEngine;
 public class Health : NetworkBehaviour
 {
     [field: SerializeField] public int MaxHealt {get; private set;} = 100;
+    public ulong LastDamageDealer { get; private set; } = ulong.MaxValue;
     [SerializeField] CameraShake cameraShake;
     [SerializeField] AudioSource hitSound;
 
@@ -52,7 +53,13 @@ public class Health : NetworkBehaviour
         {
             OnDie.Invoke(this);
             isDead = true;
+            LastDamageDealer = ulong.MaxValue; //reset LastDamageDealer
         }
+    }
+
+    public void RegisterDamageDealer(ulong dealerId)
+    {
+        LastDamageDealer = dealerId;
     }
 
      [ClientRpc]

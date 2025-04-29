@@ -55,14 +55,15 @@ public class RespawnHandler : NetworkBehaviour
     private void HandlePlayerDie(TankPlayer player)
     {   
         int keptCoins = (int)(player.Wallet.TotalCoins.Value * (keptCoinPercentage / 100));
+        int keptKills = (int)(player.KillTracker.TotalKills.Value);
 
         Destroy(player.gameObject);
         //wait for frame to respawn
-        StartCoroutine(RespawnPlayer(player.OwnerClientId, keptCoins));
+        StartCoroutine(RespawnPlayer(player.OwnerClientId, keptCoins, keptKills));
     }
 
 
-    private IEnumerator RespawnPlayer(ulong ownerClientId, int keptCoins)
+    private IEnumerator RespawnPlayer(ulong ownerClientId, int keptCoins, int keptKills)
     {
         yield return new WaitForSeconds(0.1f);
 
@@ -79,6 +80,7 @@ public class RespawnHandler : NetworkBehaviour
 
         // Add the coins back to the player
         playerInstance.Wallet.TotalCoins.Value += keptCoins;
+        playerInstance.KillTracker.TotalKills.Value += keptKills;
 
         // Set spawn rotation and camera rotation for all clients after death
         SetSpawnRotation(playerInstance);

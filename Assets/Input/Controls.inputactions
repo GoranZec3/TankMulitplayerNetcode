@@ -40,6 +40,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Leaderboard",
+                    "type": "Button",
+                    "id": "869b9f01-2dbd-44c8-9fc9-5530768bab2b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -238,6 +247,17 @@
                     "processors": "",
                     "groups": ";Keyboard & Mouse",
                     "action": "OrbitCamera",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "dc11d044-9ab7-47d6-a0c8-290d1d6a811a",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Leaderboard",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

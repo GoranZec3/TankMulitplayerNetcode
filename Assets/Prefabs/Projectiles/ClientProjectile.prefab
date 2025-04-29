@@ -286,7 +286,7 @@ PrefabInstance:
       objectReference: {fileID: 673816791678356365}
     - target: {fileID: 8836654574113285788, guid: c48fe6978f6740842b25465d1c165f1c, type: 3}
       propertyPath: m_CollisionDetection
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
